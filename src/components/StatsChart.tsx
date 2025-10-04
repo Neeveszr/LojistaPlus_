@@ -20,6 +20,11 @@ const StatsChart = ({ storeId, selectedMonth }: StatsChartProps) => {
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const monthToLocalDate = (ym: string) => {
+    const [y, m] = ym.split('-').map(Number);
+    return new Date(y, (m || 1) - 1, 1);
+  };
+
   useEffect(() => {
     loadChartData();
   }, [storeId, selectedMonth]);
@@ -28,8 +33,8 @@ const StatsChart = ({ storeId, selectedMonth }: StatsChartProps) => {
     try {
       console.log('📈 Carregando gráfico para o mês:', selectedMonth);
       
-      const startDate = startOfMonth(new Date(selectedMonth + '-01'));
-      const endDate = endOfMonth(new Date(selectedMonth + '-01'));
+      const startDate = startOfMonth(monthToLocalDate(selectedMonth));
+      const endDate = endOfMonth(monthToLocalDate(selectedMonth));
       const daysInMonth = eachDayOfInterval({ start: startDate, end: endDate });
 
       const chartData: ChartData[] = [];

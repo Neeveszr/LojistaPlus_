@@ -40,6 +40,11 @@ const Dashboard = () => {
     return month;
   });
 
+  const monthToLocalDate = (ym: string) => {
+    const [y, m] = ym.split('-').map(Number);
+    return new Date(y, (m || 1) - 1, 1);
+  };
+
   useEffect(() => {
     if (!user) {
       navigate('/auth');
@@ -63,8 +68,8 @@ const Dashboard = () => {
       setStore(storeData);
 
       // Calculate month range
-      const startDate = startOfMonth(new Date(selectedMonth + '-01'));
-      const endDate = endOfMonth(new Date(selectedMonth + '-01'));
+      const startDate = startOfMonth(monthToLocalDate(selectedMonth));
+      const endDate = endOfMonth(monthToLocalDate(selectedMonth));
       const startStr = format(startDate, 'yyyy-MM-dd');
       const endStr = format(endDate, 'yyyy-MM-dd');
 
@@ -122,8 +127,8 @@ const Dashboard = () => {
     if (!store) return;
 
     try {
-      const startDate = startOfMonth(new Date(selectedMonth));
-      const endDate = endOfMonth(new Date(selectedMonth));
+      const startDate = startOfMonth(monthToLocalDate(selectedMonth));
+      const endDate = endOfMonth(monthToLocalDate(selectedMonth));
       const startStr = format(startDate, 'yyyy-MM-dd');
       const endStr = format(endDate, 'yyyy-MM-dd');
 

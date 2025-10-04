@@ -27,6 +27,11 @@ const TransactionList = ({ storeId, type, onUpdate, selectedMonth }: Transaction
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const monthToLocalDate = (ym: string) => {
+    const [y, m] = ym.split('-').map(Number);
+    return new Date(y, (m || 1) - 1, 1);
+  };
+
   useEffect(() => {
     loadTransactions();
   }, [storeId, type, selectedMonth]);
@@ -35,8 +40,8 @@ const TransactionList = ({ storeId, type, onUpdate, selectedMonth }: Transaction
     try {
       console.log('📝 Carregando transações para o mês:', selectedMonth);
       
-      const startDate = startOfMonth(new Date(selectedMonth + '-01'));
-      const endDate = endOfMonth(new Date(selectedMonth + '-01'));
+      const startDate = startOfMonth(monthToLocalDate(selectedMonth));
+      const endDate = endOfMonth(monthToLocalDate(selectedMonth));
       const startStr = format(startDate, 'yyyy-MM-dd');
       const endStr = format(endDate, 'yyyy-MM-dd');
 
