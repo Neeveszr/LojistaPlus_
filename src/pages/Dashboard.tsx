@@ -13,6 +13,7 @@ import { ptBR } from 'date-fns/locale';
 import TransactionForm from '@/components/TransactionForm';
 import TransactionList from '@/components/TransactionList';
 import StatsChart from '@/components/StatsChart';
+import WeeklyStatsChart from '@/components/WeeklyStatsChart';
 
 interface StoreData {
   id: string;
@@ -385,8 +386,11 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Chart */}
-        {store && <StatsChart storeId={store.id} selectedMonth={selectedMonth} />}
+        {/* Charts */}
+        <div className="mb-8 grid gap-6 md:grid-cols-2">
+          {store && <StatsChart storeId={store.id} selectedMonth={selectedMonth} />}
+          {store && <WeeklyStatsChart storeId={store.id} />}
+        </div>
 
         {/* Transactions */}
         <Card className="mt-8">
