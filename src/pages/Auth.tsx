@@ -39,13 +39,16 @@ const Auth = () => {
 
       if (error) throw error;
 
-      // Wait for session to be established
+      // Check if email confirmation is required
       if (data.session) {
         toast.success('Conta criada com sucesso!');
         // Small delay to ensure AuthProvider updates
         setTimeout(() => {
           navigate('/setup');
         }, 100);
+      } else {
+        // Email confirmation is enabled
+        toast.info('Verifique seu email para confirmar a conta antes de fazer login.');
       }
     } catch (error: any) {
       toast.error(error.message || 'Erro ao criar conta');
@@ -64,7 +67,12 @@ const Auth = () => {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === 'Invalid login credentials') {
+          throw new Error('Email ou senha incorretos. Se você acabou de criar a conta, verifique seu email para confirmá-la.');
+        }
+        throw error;
+      }
 
       toast.success('Login realizado com sucesso!');
       navigate('/dashboard');
