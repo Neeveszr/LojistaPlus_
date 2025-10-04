@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { format, subDays } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface StatsChartProps {
   storeId: string;
+  selectedMonth: string;
 }
 
 interface ChartData {
@@ -15,43 +16,44 @@ interface ChartData {
   despesas: number;
 }
 
-const StatsChart = ({ storeId }: StatsChartProps) => {
+const StatsChart = ({ storeId, selectedMonth }: StatsChartProps) => {
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadChartData();
-  }, [storeId]);
+  }, [storeId, selectedMonth]);
 
   const loadChartData = async () => {
     try {
-      const last7Days = Array.from({ length: 7 }, (_, i) => {
-        const date = subDays(new Date(), 6 - i);
-        return format(date, 'yyyy-MM-dd');
-      });
+      const startDate = startOfMonth(new Date(selectedMonth));
+      const endDate = endOfMonth(new Date(selectedMonth));
+      const daysInMonth = eachDayOfInterval({ start: startDate, end: endDate });
 
       const chartData: ChartData[] = [];
 
-      for (const date of last7Days) {
+      for (const date of daysInMonth) {
+        const dateStr = format(date, 'yyyy-MM-dd');
+
         // Get vendas
         const { data: vendas } = await supabase
           .from('vendas')
           .select('valor')
           .eq('id_loja', storeId)
-          .eq('data_venda', date);
+          .eq('data_venda', dateStr);
 
         // Get despesas
         const { data: despesas } = await supabase
           .from('despesas')
           .select('valor')
           .eq('id_loja', storeId)
-          .eq('data_despesa', date);
+          .eq('data_despesa', dateStr);
 
         const totalVendas = vendas?.reduce((acc, v) => acc + Number(v.valor), 0) || 0;
         const totalDespesas = despesas?.reduce((acc, d) => acc + Number(d.valor), 0) || 0;
 
         chartData.push({
-          data: format(new Date(date), 'dd/MM', { locale: ptBR }),
+          data: format(date, 'dd/MM', { locale: ptBR }),
           vendas: totalVendas,
           despesas: totalDespesas,
         });
@@ -78,9 +80,9 @@ const StatsChart = ({ storeId }: StatsChartProps) => {
   return (
     <Card className="shadow-accent">
       <CardHeader>
-        <CardTitle>Desempenho dos últimos 7 dias</CardTitle>
+        <CardTitle>Desempenho do mês</CardTitle>
         <CardDescription>
-          Acompanhe suas vendas e despesas diariamente
+          Acompanhe suas vendas e despesas ao longo do mês
         </CardDescription>
       </CardHeader>
       <CardContent>

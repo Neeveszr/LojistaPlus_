@@ -5,8 +5,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, TrendingUp, TrendingDown, DollarSign, Store, Plus } from 'lucide-react';
+import { LogOut, TrendingUp, TrendingDown, DollarSign, Store, Plus, Download, Calendar } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import TransactionForm from '@/components/TransactionForm';
 import TransactionList from '@/components/TransactionList';
 import StatsChart from '@/components/StatsChart';
@@ -30,6 +33,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showTransactionForm, setShowTransactionForm] = useState(false);
   const [transactionType, setTransactionType] = useState<'venda' | 'despesa'>('venda');
+  const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
 
   useEffect(() => {
     if (!user) {
@@ -37,7 +41,7 @@ const Dashboard = () => {
       return;
     }
     loadData();
-  }, [user, navigate]);
+  }, [user, navigate, selectedMonth]);
 
   const loadData = async () => {
     try {
@@ -51,18 +55,33 @@ const Dashboard = () => {
       if (storeError) throw storeError;
       setStore(storeData);
 
-      // Get summary
-      const { data: summaryData, error: summaryError } = await supabase
-        .from('resumo_caixa')
-        .select('*')
+      // Calculate month range
+      const startDate = startOfMonth(new Date(selectedMonth));
+      const endDate = endOfMonth(new Date(selectedMonth));
+      const startStr = format(startDate, 'yyyy-MM-dd');
+      const endStr = format(endDate, 'yyyy-MM-dd');
+
+      // Get vendas for the month
+      const { data: vendasData } = await supabase
+        .from('vendas')
+        .select('valor')
         .eq('id_loja', storeData.id)
-        .single();
+        .gte('data_venda', startStr)
+        .lte('data_venda', endStr);
 
-      if (summaryError && summaryError.code !== 'PGRST116') {
-        throw summaryError;
-      }
+      // Get despesas for the month
+      const { data: despesasData } = await supabase
+        .from('despesas')
+        .select('valor')
+        .eq('id_loja', storeData.id)
+        .gte('data_despesa', startStr)
+        .lte('data_despesa', endStr);
 
-      setSummary(summaryData || { total_vendas: 0, total_despesas: 0, saldo: 0 });
+      const totalVendas = vendasData?.reduce((acc, v) => acc + Number(v.valor), 0) || 0;
+      const totalDespesas = despesasData?.reduce((acc, d) => acc + Number(d.valor), 0) || 0;
+      const saldo = totalVendas - totalDespesas;
+
+      setSummary({ total_vendas: totalVendas, total_despesas: totalDespesas, saldo });
     } catch (error: any) {
       toast.error('Erro ao carregar dados');
       console.error(error);
@@ -74,6 +93,116 @@ const Dashboard = () => {
   const handleTransactionSuccess = () => {
     setShowTransactionForm(false);
     loadData();
+  };
+
+  const generateMonthOptions = () => {
+    const options = [];
+    const currentDate = new Date();
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const value = format(date, 'yyyy-MM');
+      const label = format(date, 'MMMM yyyy', { locale: ptBR });
+      options.push({ value, label: label.charAt(0).toUpperCase() + label.slice(1) });
+    }
+    return options;
+  };
+
+  const exportMonthlyCSV = async () => {
+    if (!store) return;
+
+    try {
+      const startDate = startOfMonth(new Date(selectedMonth));
+      const endDate = endOfMonth(new Date(selectedMonth));
+      const startStr = format(startDate, 'yyyy-MM-dd');
+      const endStr = format(endDate, 'yyyy-MM-dd');
+
+      const { data: vendas } = await supabase
+        .from('vendas')
+        .select('*')
+        .eq('id_loja', store.id)
+        .gte('data_venda', startStr)
+        .lte('data_venda', endStr)
+        .order('data_venda', { ascending: true });
+
+      const { data: despesas } = await supabase
+        .from('despesas')
+        .select('*')
+        .eq('id_loja', store.id)
+        .gte('data_despesa', startStr)
+        .lte('data_despesa', endStr)
+        .order('data_despesa', { ascending: true });
+
+      let csv = 'Tipo,Data,Valor,Descrição,Categoria\n';
+      
+      vendas?.forEach(v => {
+        csv += `Venda,${v.data_venda},${v.valor},"${v.descricao || ''}",\n`;
+      });
+
+      despesas?.forEach(d => {
+        csv += `Despesa,${d.data_despesa},${d.valor},"${d.descricao || ''}","${d.categoria || ''}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `relatorio-mensal-${selectedMonth}.csv`;
+      a.click();
+      
+      toast.success('Relatório mensal exportado!');
+    } catch (error) {
+      toast.error('Erro ao exportar relatório');
+      console.error(error);
+    }
+  };
+
+  const exportWeeklyCSV = async () => {
+    if (!store) return;
+
+    try {
+      const startDate = startOfWeek(new Date(), { locale: ptBR });
+      const endDate = endOfWeek(new Date(), { locale: ptBR });
+      const startStr = format(startDate, 'yyyy-MM-dd');
+      const endStr = format(endDate, 'yyyy-MM-dd');
+
+      const { data: vendas } = await supabase
+        .from('vendas')
+        .select('*')
+        .eq('id_loja', store.id)
+        .gte('data_venda', startStr)
+        .lte('data_venda', endStr)
+        .order('data_venda', { ascending: true });
+
+      const { data: despesas } = await supabase
+        .from('despesas')
+        .select('*')
+        .eq('id_loja', store.id)
+        .gte('data_despesa', startStr)
+        .lte('data_despesa', endStr)
+        .order('data_despesa', { ascending: true });
+
+      let csv = 'Tipo,Data,Valor,Descrição,Categoria\n';
+      
+      vendas?.forEach(v => {
+        csv += `Venda,${v.data_venda},${v.valor},"${v.descricao || ''}",\n`;
+      });
+
+      despesas?.forEach(d => {
+        csv += `Despesa,${d.data_despesa},${d.valor},"${d.descricao || ''}","${d.categoria || ''}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `relatorio-semanal-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      a.click();
+      
+      toast.success('Relatório semanal exportado!');
+    } catch (error) {
+      toast.error('Erro ao exportar relatório');
+      console.error(error);
+    }
   };
 
   if (loading) {
@@ -98,10 +227,33 @@ const Dashboard = () => {
               <p className="text-sm text-muted-foreground">{store?.nome}</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Sair
-          </Button>
+          <div className="flex items-center gap-2">
+            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+              <SelectTrigger className="w-[180px]">
+                <Calendar className="mr-2 h-4 w-4" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {generateMonthOptions().map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm" onClick={exportWeeklyCSV}>
+              <Download className="mr-2 h-4 w-4" />
+              Semanal
+            </Button>
+            <Button variant="outline" size="sm" onClick={exportMonthlyCSV}>
+              <Download className="mr-2 h-4 w-4" />
+              Mensal
+            </Button>
+            <Button variant="ghost" size="sm" onClick={signOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Sair
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -156,7 +308,7 @@ const Dashboard = () => {
         </div>
 
         {/* Chart */}
-        {store && <StatsChart storeId={store.id} />}
+        {store && <StatsChart storeId={store.id} selectedMonth={selectedMonth} />}
 
         {/* Transactions */}
         <Card className="mt-8">
@@ -213,6 +365,7 @@ const Dashboard = () => {
                       storeId={store.id}
                       type="venda"
                       onUpdate={loadData}
+                      selectedMonth={selectedMonth}
                     />
                   )}
                 </TabsContent>
@@ -222,6 +375,7 @@ const Dashboard = () => {
                       storeId={store.id}
                       type="despesa"
                       onUpdate={loadData}
+                      selectedMonth={selectedMonth}
                     />
                   )}
                 </TabsContent>

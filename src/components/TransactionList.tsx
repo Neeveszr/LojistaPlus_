@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Trash2, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface Transaction {
@@ -20,25 +20,34 @@ interface TransactionListProps {
   storeId: string;
   type: 'venda' | 'despesa';
   onUpdate: () => void;
+  selectedMonth: string;
 }
 
-const TransactionList = ({ storeId, type, onUpdate }: TransactionListProps) => {
+const TransactionList = ({ storeId, type, onUpdate, selectedMonth }: TransactionListProps) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadTransactions();
-  }, [storeId, type]);
+  }, [storeId, type, selectedMonth]);
 
   const loadTransactions = async () => {
     try {
+      const startDate = startOfMonth(new Date(selectedMonth));
+      const endDate = endOfMonth(new Date(selectedMonth));
+      const startStr = format(startDate, 'yyyy-MM-dd');
+      const endStr = format(endDate, 'yyyy-MM-dd');
+
       const table = type === 'venda' ? 'vendas' : 'despesas';
+      const dateColumn = type === 'venda' ? 'data_venda' : 'data_despesa';
+      
       const { data, error } = await supabase
         .from(table)
         .select('*')
         .eq('id_loja', storeId)
-        .order('criada_em', { ascending: false })
-        .limit(10);
+        .gte(dateColumn, startStr)
+        .lte(dateColumn, endStr)
+        .order('criada_em', { ascending: false });
 
       if (error) throw error;
       setTransactions(data || []);
