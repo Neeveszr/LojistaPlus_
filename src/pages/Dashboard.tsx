@@ -169,22 +169,42 @@ const Dashboard = () => {
         .lte('data_despesa', endStr)
         .order('data_despesa', { ascending: true });
 
-      let csv = 'Tipo,Data,Valor,Descrição,Categoria\n';
+      const totalVendas = vendas?.reduce((acc, v) => acc + Number(v.valor), 0) || 0;
+      const totalDespesas = despesas?.reduce((acc, d) => acc + Number(d.valor), 0) || 0;
+      const saldoMensal = totalVendas - totalDespesas;
+
+      // CSV com cabeçalho informativo
+      let csv = `RELATÓRIO MENSAL - ${format(startDate, 'MMMM yyyy', { locale: ptBR }).toUpperCase()}\n`;
+      csv += `Loja: ${store.nome}\n`;
+      csv += `Período: ${format(startDate, 'dd/MM/yyyy', { locale: ptBR })} a ${format(endDate, 'dd/MM/yyyy', { locale: ptBR })}\n`;
+      csv += `\n`;
+      csv += `RESUMO FINANCEIRO\n`;
+      csv += `Total de Vendas:,R$ ${totalVendas.toFixed(2)}\n`;
+      csv += `Total de Despesas:,R$ ${totalDespesas.toFixed(2)}\n`;
+      csv += `Saldo do Período:,R$ ${saldoMensal.toFixed(2)}\n`;
+      csv += `\n`;
+      csv += `DETALHAMENTO\n`;
+      csv += `Tipo,Data,Valor (R$),Descrição,Categoria\n`;
       
       vendas?.forEach(v => {
-        csv += `Venda,${v.data_venda},${v.valor},"${v.descricao || ''}",\n`;
+        const dataFormatada = format(new Date(v.data_venda), 'dd/MM/yyyy', { locale: ptBR });
+        const valorFormatado = Number(v.valor).toFixed(2);
+        csv += `Venda,${dataFormatada},${valorFormatado},"${v.descricao || 'Sem descrição'}",\n`;
       });
 
       despesas?.forEach(d => {
-        csv += `Despesa,${d.data_despesa},${d.valor},"${d.descricao || ''}","${d.categoria || ''}"\n`;
+        const dataFormatada = format(new Date(d.data_despesa), 'dd/MM/yyyy', { locale: ptBR });
+        const valorFormatado = Number(d.valor).toFixed(2);
+        csv += `Despesa,${dataFormatada},${valorFormatado},"${d.descricao || 'Sem descrição'}","${d.categoria || 'Sem categoria'}"\n`;
       });
 
-      const blob = new Blob([csv], { type: 'text/csv' });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `relatorio-mensal-${selectedMonth}.csv`;
       a.click();
+      window.URL.revokeObjectURL(url);
       
       toast.success('Relatório mensal exportado!');
     } catch (error) {
@@ -218,22 +238,43 @@ const Dashboard = () => {
         .lte('data_despesa', endStr)
         .order('data_despesa', { ascending: true });
 
-      let csv = 'Tipo,Data,Valor,Descrição,Categoria\n';
+      const totalVendas = vendas?.reduce((acc, v) => acc + Number(v.valor), 0) || 0;
+      const totalDespesas = despesas?.reduce((acc, d) => acc + Number(d.valor), 0) || 0;
+      const saldoSemanal = totalVendas - totalDespesas;
+
+      // CSV com cabeçalho informativo
+      let csv = `RELATÓRIO SEMANAL\n`;
+      csv += `Loja: ${store.nome}\n`;
+      csv += `Período: ${format(startDate, 'dd/MM/yyyy', { locale: ptBR })} a ${format(endDate, 'dd/MM/yyyy', { locale: ptBR })}\n`;
+      csv += `Gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}\n`;
+      csv += `\n`;
+      csv += `RESUMO FINANCEIRO\n`;
+      csv += `Total de Vendas:,R$ ${totalVendas.toFixed(2)}\n`;
+      csv += `Total de Despesas:,R$ ${totalDespesas.toFixed(2)}\n`;
+      csv += `Saldo do Período:,R$ ${saldoSemanal.toFixed(2)}\n`;
+      csv += `\n`;
+      csv += `DETALHAMENTO\n`;
+      csv += `Tipo,Data,Valor (R$),Descrição,Categoria\n`;
       
       vendas?.forEach(v => {
-        csv += `Venda,${v.data_venda},${v.valor},"${v.descricao || ''}",\n`;
+        const dataFormatada = format(new Date(v.data_venda), 'dd/MM/yyyy', { locale: ptBR });
+        const valorFormatado = Number(v.valor).toFixed(2);
+        csv += `Venda,${dataFormatada},${valorFormatado},"${v.descricao || 'Sem descrição'}",\n`;
       });
 
       despesas?.forEach(d => {
-        csv += `Despesa,${d.data_despesa},${d.valor},"${d.descricao || ''}","${d.categoria || ''}"\n`;
+        const dataFormatada = format(new Date(d.data_despesa), 'dd/MM/yyyy', { locale: ptBR });
+        const valorFormatado = Number(d.valor).toFixed(2);
+        csv += `Despesa,${dataFormatada},${valorFormatado},"${d.descricao || 'Sem descrição'}","${d.categoria || 'Sem categoria'}"\n`;
       });
 
-      const blob = new Blob([csv], { type: 'text/csv' });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `relatorio-semanal-${format(new Date(), 'yyyy-MM-dd')}.csv`;
       a.click();
+      window.URL.revokeObjectURL(url);
       
       toast.success('Relatório semanal exportado!');
     } catch (error) {
