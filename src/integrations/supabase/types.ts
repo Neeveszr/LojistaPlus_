@@ -57,6 +57,13 @@ export type Database = {
             referencedRelation: "resumo_caixa"
             referencedColumns: ["id_loja"]
           },
+          {
+            foreignKeyName: "despesas_id_loja_fkey"
+            columns: ["id_loja"]
+            isOneToOne: false
+            referencedRelation: "view_resumo_financeiro"
+            referencedColumns: ["id_loja"]
+          },
         ]
       }
       lojas: {
@@ -120,6 +127,13 @@ export type Database = {
             referencedRelation: "resumo_caixa"
             referencedColumns: ["id_loja"]
           },
+          {
+            foreignKeyName: "vendas_id_loja_fkey"
+            columns: ["id_loja"]
+            isOneToOne: false
+            referencedRelation: "view_resumo_financeiro"
+            referencedColumns: ["id_loja"]
+          },
         ]
       }
     }
@@ -129,6 +143,20 @@ export type Database = {
           id_loja: string | null
           saldo: number | null
           total_despesas: number | null
+          total_vendas: number | null
+        }
+        Relationships: []
+      }
+      view_resumo_financeiro: {
+        Row: {
+          id_loja: string | null
+          id_usuario: string | null
+          nome_loja: string | null
+          quantidade_despesas: number | null
+          quantidade_vendas: number | null
+          saldo: number | null
+          total_despesas: number | null
+          total_transacoes: number | null
           total_vendas: number | null
         }
         Relationships: []
