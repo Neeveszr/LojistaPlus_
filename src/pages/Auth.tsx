@@ -72,10 +72,11 @@ const Auth = () => {
     setLoading(true);
     console.log('🔵 Iniciando login com Google...');
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
+          skipBrowserRedirect: true,
         },
       });
 
@@ -83,7 +84,31 @@ const Auth = () => {
         console.error('❌ Erro no Google OAuth:', error);
         throw error;
       }
-      console.log('✅ Redirecionando para Google...');
+
+      const url = data?.url;
+      if (!url) {
+        throw new Error('Não foi possível obter a URL de login do Google.');
+      }
+
+      console.log('✅ Obtida URL do Google, tentando abrir fora do iframe...');
+
+      const openInTop = () => {
+        try {
+          if (window.top) {
+            (window.top as Window).location.href = url;
+            return true;
+          }
+        } catch {}
+        return false;
+      };
+
+      const openedTop = openInTop();
+      if (!openedTop) {
+        const win = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!win) {
+          window.location.href = url;
+        }
+      }
     } catch (error: any) {
       console.error('❌ Erro capturado:', error);
       toast.error(error.message || 'Erro ao fazer login com Google');
