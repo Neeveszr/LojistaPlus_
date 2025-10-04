@@ -37,34 +37,48 @@ const StatsChart = ({ storeId, selectedMonth }: StatsChartProps) => {
       const endDate = endOfMonth(monthToLocalDate(selectedMonth));
       const daysInMonth = eachDayOfInterval({ start: startDate, end: endDate });
 
-      const chartData: ChartData[] = [];
+      const startDateStr = format(startDate, 'yyyy-MM-dd');
+      const endDateStr = format(endDate, 'yyyy-MM-dd');
 
-      for (const date of daysInMonth) {
+      // Fetch all vendas for the month in one query
+      const { data: vendas } = await supabase
+        .from('vendas')
+        .select('valor, data_venda')
+        .eq('id_loja', storeId)
+        .gte('data_venda', startDateStr)
+        .lte('data_venda', endDateStr);
+
+      // Fetch all despesas for the month in one query
+      const { data: despesas } = await supabase
+        .from('despesas')
+        .select('valor, data_despesa')
+        .eq('id_loja', storeId)
+        .gte('data_despesa', startDateStr)
+        .lte('data_despesa', endDateStr);
+
+      // Group by date
+      const vendasByDate = new Map<string, number>();
+      const despesasByDate = new Map<string, number>();
+
+      vendas?.forEach(v => {
+        const current = vendasByDate.get(v.data_venda) || 0;
+        vendasByDate.set(v.data_venda, current + Number(v.valor));
+      });
+
+      despesas?.forEach(d => {
+        const current = despesasByDate.get(d.data_despesa) || 0;
+        despesasByDate.set(d.data_despesa, current + Number(d.valor));
+      });
+
+      // Build chart data
+      const chartData: ChartData[] = daysInMonth.map(date => {
         const dateStr = format(date, 'yyyy-MM-dd');
-
-        // Get vendas
-        const { data: vendas } = await supabase
-          .from('vendas')
-          .select('valor')
-          .eq('id_loja', storeId)
-          .eq('data_venda', dateStr);
-
-        // Get despesas
-        const { data: despesas } = await supabase
-          .from('despesas')
-          .select('valor')
-          .eq('id_loja', storeId)
-          .eq('data_despesa', dateStr);
-
-        const totalVendas = vendas?.reduce((acc, v) => acc + Number(v.valor), 0) || 0;
-        const totalDespesas = despesas?.reduce((acc, d) => acc + Number(d.valor), 0) || 0;
-
-        chartData.push({
+        return {
           data: format(date, 'dd/MM', { locale: ptBR }),
-          vendas: totalVendas,
-          despesas: totalDespesas,
-        });
-      }
+          vendas: vendasByDate.get(dateStr) || 0,
+          despesas: despesasByDate.get(dateStr) || 0,
+        };
+      });
 
       setChartData(chartData);
     } catch (error) {
