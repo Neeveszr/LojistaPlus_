@@ -340,46 +340,55 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-8">
         {/* Summary Cards */}
         <div className="mb-8 grid gap-4 md:grid-cols-3">
-          <Card className="shadow-primary transition-smooth hover:scale-105">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Saldo Total</CardTitle>
-              <DollarSign className="h-4 w-4 text-primary" />
+          <Card className="glass-card gradient-primary shadow-primary transition-smooth hover:scale-105 border-0 overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+              <CardTitle className="text-sm font-medium text-primary-foreground">Saldo Total</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-primary-foreground" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
+            <CardContent className="relative z-10">
+              <div className="text-3xl font-bold text-primary-foreground">
                 R$ {(summary?.saldo || 0).toFixed(2)}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-primary-foreground/80 mt-1">
                 Receitas menos despesas
               </p>
             </CardContent>
           </Card>
 
-          <Card className="shadow-accent transition-smooth hover:scale-105">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de Vendas</CardTitle>
-              <TrendingUp className="h-4 w-4 text-accent" />
+          <Card className="glass-card gradient-accent shadow-accent transition-smooth hover:scale-105 border-0 overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+              <CardTitle className="text-sm font-medium text-accent-foreground">Total de Vendas</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <TrendingUp className="h-5 w-5 text-accent-foreground" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-accent">
+            <CardContent className="relative z-10">
+              <div className="text-3xl font-bold text-accent-foreground">
                 R$ {(summary?.total_vendas || 0).toFixed(2)}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-accent-foreground/80 mt-1">
                 Receita total do período
               </p>
             </CardContent>
           </Card>
 
-          <Card className="shadow-secondary transition-smooth hover:scale-105">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de Despesas</CardTitle>
-              <TrendingDown className="h-4 w-4 text-destructive" />
+          <Card className="glass-card gradient-destructive shadow-destructive transition-smooth hover:scale-105 border-0 overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+              <CardTitle className="text-sm font-medium text-destructive-foreground">Total de Despesas</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <TrendingDown className="h-5 w-5 text-destructive-foreground" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-destructive">
+            <CardContent className="relative z-10">
+              <div className="text-3xl font-bold text-destructive-foreground">
                 R$ {(summary?.total_despesas || 0).toFixed(2)}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-destructive-foreground/80 mt-1">
                 Gastos totais do período
               </p>
             </CardContent>

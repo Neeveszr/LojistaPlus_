@@ -50,11 +50,17 @@ All colors MUST be HSL.
     --gradient-primary: linear-gradient(135deg, hsl(142, 70%, 75%) 0%, hsl(170, 65%, 80%) 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(340, 65%, 85%) 0%, hsl(320, 60%, 88%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(200, 70%, 85%) 0%, hsl(220, 65%, 88%) 100%);
+    --gradient-destructive: linear-gradient(135deg, hsl(0, 70%, 75%) 0%, hsl(15, 65%, 80%) 100%);
     
     /* Sombras coloridas */
     --shadow-primary: 0 10px 40px -10px hsl(142, 70%, 75% / 0.3);
     --shadow-secondary: 0 10px 40px -10px hsl(340, 65%, 85% / 0.3);
     --shadow-accent: 0 10px 40px -10px hsl(200, 70%, 85% / 0.3);
+    --shadow-destructive: 0 10px 40px -10px hsl(0, 70%, 75% / 0.3);
+    
+    /* Glass-morphism */
+    --glass-bg: hsl(0 0% 100% / 0.7);
+    --glass-border: hsl(0 0% 100% / 0.18);
     
     /* Transições suaves */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -91,6 +97,10 @@ All colors MUST be HSL.
     --border: 150 10% 20%;
     --input: 150 10% 20%;
     --ring: 142 60% 65%;
+    
+    /* Glass-morphism dark */
+    --glass-bg: hsl(150 10% 12% / 0.7);
+    --glass-border: hsl(150 10% 95% / 0.1);
   }
 }
 
@@ -118,6 +128,10 @@ All colors MUST be HSL.
     background: var(--gradient-accent);
   }
   
+  .gradient-destructive {
+    background: var(--gradient-destructive);
+  }
+  
   .shadow-primary {
     box-shadow: var(--shadow-primary);
   }
@@ -130,7 +144,23 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-accent);
   }
   
+  .shadow-destructive {
+    box-shadow: var(--shadow-destructive);
+  }
+  
   .transition-smooth {
     transition: var(--transition-smooth);
+  }
+  
+  /* Glass-morphism effect */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+  }
+  
+  .glass-card {
+    @apply glass rounded-xl;
   }
 }
