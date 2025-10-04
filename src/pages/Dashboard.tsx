@@ -295,15 +295,22 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm">
+      <header className="border-b bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-              <Store className="h-6 w-6 text-primary" />
+            <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-primary">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 to-transparent" />
+              <Store className="h-6 w-6 text-primary-foreground relative z-10" />
+              <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-accent border-2 border-background" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Lojista+</h1>
-              <p className="text-sm text-muted-foreground">{store?.nome}</p>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Lojista+
+              </h1>
+              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                <span className="inline-block w-2 h-2 rounded-full bg-accent animate-pulse" />
+                {store?.nome}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -396,7 +403,7 @@ const Dashboard = () => {
         </div>
 
         {/* Charts */}
-        <div className="mb-8 grid gap-6 md:grid-cols-2">
+        <div className="mb-8 space-y-6">
           {store && <StatsChart storeId={store.id} selectedMonth={selectedMonth} />}
           {store && <WeeklyStatsChart storeId={store.id} />}
         </div>
