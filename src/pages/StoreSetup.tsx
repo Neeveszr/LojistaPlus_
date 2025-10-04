@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +13,7 @@ const StoreSetup = () => {
   const [storeName, setStoreName] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,15 +23,15 @@ const StoreSetup = () => {
       return;
     }
 
+    if (!user) {
+      toast.error('Usuário não autenticado');
+      navigate('/auth');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('Usuário não encontrado');
-      }
-
       // Update store name
       const { error } = await supabase
         .from('lojas')
