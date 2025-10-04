@@ -70,6 +70,7 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    console.log('🔵 Iniciando login com Google...');
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -78,8 +79,13 @@ const Auth = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro no Google OAuth:', error);
+        throw error;
+      }
+      console.log('✅ Redirecionando para Google...');
     } catch (error: any) {
+      console.error('❌ Erro capturado:', error);
       toast.error(error.message || 'Erro ao fazer login com Google');
       setLoading(false);
     }
