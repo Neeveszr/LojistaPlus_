@@ -33,7 +33,12 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showTransactionForm, setShowTransactionForm] = useState(false);
   const [transactionType, setTransactionType] = useState<'venda' | 'despesa'>('venda');
-  const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const now = new Date();
+    const month = format(now, 'yyyy-MM');
+    console.log('🗓️ Mês inicial:', month);
+    return month;
+  });
 
   useEffect(() => {
     if (!user) {
@@ -45,6 +50,8 @@ const Dashboard = () => {
 
   const loadData = async () => {
     try {
+      console.log('📊 Carregando dados para o mês:', selectedMonth);
+      
       // Get store
       const { data: storeData, error: storeError } = await supabase
         .from('lojas')
@@ -56,10 +63,12 @@ const Dashboard = () => {
       setStore(storeData);
 
       // Calculate month range
-      const startDate = startOfMonth(new Date(selectedMonth));
-      const endDate = endOfMonth(new Date(selectedMonth));
+      const startDate = startOfMonth(new Date(selectedMonth + '-01'));
+      const endDate = endOfMonth(new Date(selectedMonth + '-01'));
       const startStr = format(startDate, 'yyyy-MM-dd');
       const endStr = format(endDate, 'yyyy-MM-dd');
+
+      console.log('📅 Período:', startStr, 'até', endStr);
 
       // Get vendas for the month
       const { data: vendasData } = await supabase
@@ -80,6 +89,8 @@ const Dashboard = () => {
       const totalVendas = vendasData?.reduce((acc, v) => acc + Number(v.valor), 0) || 0;
       const totalDespesas = despesasData?.reduce((acc, d) => acc + Number(d.valor), 0) || 0;
       const saldo = totalVendas - totalDespesas;
+
+      console.log('💰 Total vendas:', totalVendas, '💸 Total despesas:', totalDespesas, '💵 Saldo:', saldo);
 
       setSummary({ total_vendas: totalVendas, total_despesas: totalDespesas, saldo });
     } catch (error: any) {

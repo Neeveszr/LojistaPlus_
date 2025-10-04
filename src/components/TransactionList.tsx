@@ -33,8 +33,10 @@ const TransactionList = ({ storeId, type, onUpdate, selectedMonth }: Transaction
 
   const loadTransactions = async () => {
     try {
-      const startDate = startOfMonth(new Date(selectedMonth));
-      const endDate = endOfMonth(new Date(selectedMonth));
+      console.log('📝 Carregando transações para o mês:', selectedMonth);
+      
+      const startDate = startOfMonth(new Date(selectedMonth + '-01'));
+      const endDate = endOfMonth(new Date(selectedMonth + '-01'));
       const startStr = format(startDate, 'yyyy-MM-dd');
       const endStr = format(endDate, 'yyyy-MM-dd');
 
@@ -50,6 +52,7 @@ const TransactionList = ({ storeId, type, onUpdate, selectedMonth }: Transaction
         .order('criada_em', { ascending: false });
 
       if (error) throw error;
+      console.log(`✅ ${data?.length || 0} ${type}s encontradas`);
       setTransactions(data || []);
     } catch (error) {
       console.error('Erro ao carregar transações:', error);

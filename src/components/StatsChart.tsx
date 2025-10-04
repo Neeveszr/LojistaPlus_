@@ -26,8 +26,10 @@ const StatsChart = ({ storeId, selectedMonth }: StatsChartProps) => {
 
   const loadChartData = async () => {
     try {
-      const startDate = startOfMonth(new Date(selectedMonth));
-      const endDate = endOfMonth(new Date(selectedMonth));
+      console.log('📈 Carregando gráfico para o mês:', selectedMonth);
+      
+      const startDate = startOfMonth(new Date(selectedMonth + '-01'));
+      const endDate = endOfMonth(new Date(selectedMonth + '-01'));
       const daysInMonth = eachDayOfInterval({ start: startDate, end: endDate });
 
       const chartData: ChartData[] = [];
