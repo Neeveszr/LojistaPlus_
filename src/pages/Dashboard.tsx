@@ -50,14 +50,17 @@ const Dashboard = () => {
       navigate('/auth');
       return;
     }
-    loadData();
-  }, [user, navigate, selectedMonth]);
+    checkStoreSetup();
+  }, [user, navigate]);
 
-  const loadData = async () => {
+  useEffect(() => {
+    if (store) {
+      loadData();
+    }
+  }, [store, selectedMonth]);
+
+  const checkStoreSetup = async () => {
     try {
-      console.log('📊 Carregando dados para o mês:', selectedMonth);
-      
-      // Get store
       const { data: storeData, error: storeError } = await supabase
         .from('lojas')
         .select('*')
@@ -65,7 +68,25 @@ const Dashboard = () => {
         .single();
 
       if (storeError) throw storeError;
+      
+      // Check if store has a proper name (not default)
+      if (!storeData.nome || storeData.nome === 'Minha Loja' || storeData.nome === user?.email) {
+        navigate('/setup');
+        return;
+      }
+
       setStore(storeData);
+    } catch (error: any) {
+      toast.error('Erro ao verificar loja');
+      console.error(error);
+    }
+  };
+
+  const loadData = async () => {
+    if (!store) return;
+    
+    try {
+      console.log('📊 Carregando dados para o mês:', selectedMonth);
 
       // Calculate month range
       const startDate = startOfMonth(monthToLocalDate(selectedMonth));
@@ -79,7 +100,7 @@ const Dashboard = () => {
       const { data: vendasData } = await supabase
         .from('vendas')
         .select('valor')
-        .eq('id_loja', storeData.id)
+        .eq('id_loja', store.id)
         .gte('data_venda', startStr)
         .lte('data_venda', endStr);
 
@@ -87,7 +108,7 @@ const Dashboard = () => {
       const { data: despesasData } = await supabase
         .from('despesas')
         .select('valor')
-        .eq('id_loja', storeData.id)
+        .eq('id_loja', store.id)
         .gte('data_despesa', startStr)
         .lte('data_despesa', endStr);
 

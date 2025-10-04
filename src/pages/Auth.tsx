@@ -39,7 +39,8 @@ const Auth = () => {
 
       if (error) throw error;
 
-      toast.success('Conta criada! Verifique seu email para confirmar.');
+      toast.success('Conta criada com sucesso!');
+      navigate('/setup');
     } catch (error: any) {
       toast.error(error.message || 'Erro ao criar conta');
     } finally {
