@@ -341,7 +341,7 @@ const Dashboard = () => {
         {/* Summary Cards */}
         <div className="mb-8 grid gap-4 md:grid-cols-3">
           <Card className="glass-card gradient-primary shadow-primary transition-smooth hover:scale-105 border-0 overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent pointer-events-none" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium text-primary-foreground">Saldo Total</CardTitle>
               <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
@@ -359,7 +359,7 @@ const Dashboard = () => {
           </Card>
 
           <Card className="glass-card gradient-accent shadow-accent transition-smooth hover:scale-105 border-0 overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent pointer-events-none" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium text-accent-foreground">Total de Vendas</CardTitle>
               <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
@@ -377,7 +377,7 @@ const Dashboard = () => {
           </Card>
 
           <Card className="glass-card gradient-destructive shadow-destructive transition-smooth hover:scale-105 border-0 overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent pointer-events-none" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <CardTitle className="text-sm font-medium text-destructive-foreground">Total de Despesas</CardTitle>
               <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">

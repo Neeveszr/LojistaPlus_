@@ -46,21 +46,21 @@ All colors MUST be HSL.
 
     --radius: 1rem;
 
-    /* Gradientes */
-    --gradient-primary: linear-gradient(135deg, hsl(142, 70%, 75%) 0%, hsl(170, 65%, 80%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(340, 65%, 85%) 0%, hsl(320, 60%, 88%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(200, 70%, 85%) 0%, hsl(220, 65%, 88%) 100%);
-    --gradient-destructive: linear-gradient(135deg, hsl(0, 70%, 75%) 0%, hsl(15, 65%, 80%) 100%);
+    /* Gradientes vibrantes */
+    --gradient-primary: linear-gradient(135deg, hsl(142, 76%, 68%) 0%, hsl(170, 70%, 60%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(340, 82%, 75%) 0%, hsl(320, 75%, 70%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(200, 90%, 70%) 0%, hsl(220, 85%, 65%) 100%);
+    --gradient-destructive: linear-gradient(135deg, hsl(0, 90%, 68%) 0%, hsl(15, 85%, 62%) 100%);
     
-    /* Sombras coloridas */
-    --shadow-primary: 0 10px 40px -10px hsl(142, 70%, 75% / 0.3);
-    --shadow-secondary: 0 10px 40px -10px hsl(340, 65%, 85% / 0.3);
-    --shadow-accent: 0 10px 40px -10px hsl(200, 70%, 85% / 0.3);
-    --shadow-destructive: 0 10px 40px -10px hsl(0, 70%, 75% / 0.3);
+    /* Sombras coloridas intensas */
+    --shadow-primary: 0 10px 40px -10px hsl(142, 76%, 68% / 0.5);
+    --shadow-secondary: 0 10px 40px -10px hsl(340, 82%, 75% / 0.5);
+    --shadow-accent: 0 10px 40px -10px hsl(200, 90%, 70% / 0.5);
+    --shadow-destructive: 0 10px 40px -10px hsl(0, 90%, 68% / 0.5);
     
     /* Glass-morphism */
-    --glass-bg: hsl(0 0% 100% / 0.7);
-    --glass-border: hsl(0 0% 100% / 0.18);
+    --glass-bg: hsl(0 0% 100% / 0.25);
+    --glass-border: hsl(0 0% 100% / 0.3);
     
     /* Transições suaves */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
