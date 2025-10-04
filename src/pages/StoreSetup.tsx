@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
@@ -14,6 +14,18 @@ const StoreSetup = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  // Redirect to auth if no user after a brief moment
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!user) {
+        toast.error('Sessão expirada. Faça login novamente.');
+        navigate('/auth');
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -29,7 +29,7 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -39,8 +39,14 @@ const Auth = () => {
 
       if (error) throw error;
 
-      toast.success('Conta criada com sucesso!');
-      navigate('/setup');
+      // Wait for session to be established
+      if (data.session) {
+        toast.success('Conta criada com sucesso!');
+        // Small delay to ensure AuthProvider updates
+        setTimeout(() => {
+          navigate('/setup');
+        }, 100);
+      }
     } catch (error: any) {
       toast.error(error.message || 'Erro ao criar conta');
     } finally {
