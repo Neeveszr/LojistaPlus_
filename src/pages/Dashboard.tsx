@@ -215,6 +215,71 @@ const Dashboard = () => {
     }
   };
 
+  const exportDailyCSV = async () => {
+    if (!store) return;
+
+    try {
+      const today = format(new Date(), 'yyyy-MM-dd');
+
+      const { data: vendas } = await supabase
+        .from('vendas')
+        .select('*')
+        .eq('id_loja', store.id)
+        .eq('data_venda', today)
+        .order('criada_em', { ascending: true });
+
+      const { data: despesas } = await supabase
+        .from('despesas')
+        .select('*')
+        .eq('id_loja', store.id)
+        .eq('data_despesa', today)
+        .order('criada_em', { ascending: true });
+
+      const totalVendas = vendas?.reduce((acc, v) => acc + Number(v.valor), 0) || 0;
+      const totalDespesas = despesas?.reduce((acc, d) => acc + Number(d.valor), 0) || 0;
+      const saldoDiario = totalVendas - totalDespesas;
+
+      // CSV com cabeçalho informativo
+      let csv = `RELATÓRIO DIÁRIO\n`;
+      csv += `Loja: ${store.nome}\n`;
+      csv += `Data: ${format(new Date(), 'dd/MM/yyyy', { locale: ptBR })}\n`;
+      csv += `Gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}\n`;
+      csv += `\n`;
+      csv += `RESUMO FINANCEIRO\n`;
+      csv += `Total de Vendas:,R$ ${totalVendas.toFixed(2)}\n`;
+      csv += `Total de Despesas:,R$ ${totalDespesas.toFixed(2)}\n`;
+      csv += `Saldo do Dia:,R$ ${saldoDiario.toFixed(2)}\n`;
+      csv += `\n`;
+      csv += `DETALHAMENTO\n`;
+      csv += `Tipo,Hora,Valor (R$),Descrição,Categoria\n`;
+      
+      vendas?.forEach(v => {
+        const horaFormatada = format(new Date(v.criada_em), 'HH:mm', { locale: ptBR });
+        const valorFormatado = Number(v.valor).toFixed(2);
+        csv += `Venda,${horaFormatada},${valorFormatado},"${v.descricao || 'Sem descrição'}",\n`;
+      });
+
+      despesas?.forEach(d => {
+        const horaFormatada = format(new Date(d.criada_em), 'HH:mm', { locale: ptBR });
+        const valorFormatado = Number(d.valor).toFixed(2);
+        csv += `Despesa,${horaFormatada},${valorFormatado},"${d.descricao || 'Sem descrição'}","${d.categoria || 'Sem categoria'}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `relatorio-diario-${today}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Relatório diário exportado!');
+    } catch (error) {
+      toast.error('Erro ao exportar relatório');
+      console.error(error);
+    }
+  };
+
   const exportWeeklyCSV = async () => {
     if (!store) return;
 
@@ -328,6 +393,10 @@ const Dashboard = () => {
                 ))}
               </SelectContent>
             </Select>
+            <Button variant="outline" size="sm" onClick={exportDailyCSV}>
+              <Download className="mr-2 h-4 w-4" />
+              Diário
+            </Button>
             <Button variant="outline" size="sm" onClick={exportWeeklyCSV}>
               <Download className="mr-2 h-4 w-4" />
               Semanal
@@ -405,11 +474,11 @@ const Dashboard = () => {
 
         {/* Charts */}
         <div className="mb-8 space-y-6">
+          {store && <StatsChart storeId={store.id} selectedMonth={selectedMonth} />}
           <div className="grid gap-6 md:grid-cols-2">
             {store && <DailyPerformanceChart storeId={store.id} />}
             {store && <WeeklyStatsChart storeId={store.id} />}
           </div>
-          {store && <StatsChart storeId={store.id} selectedMonth={selectedMonth} />}
         </div>
 
         {/* Transactions */}
