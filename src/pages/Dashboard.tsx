@@ -35,7 +35,6 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showTransactionForm, setShowTransactionForm] = useState(false);
   const [transactionType, setTransactionType] = useState<'venda' | 'despesa'>('venda');
-  const [refreshKey, setRefreshKey] = useState(0);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     const month = format(now, 'yyyy-MM');
@@ -68,14 +67,9 @@ const Dashboard = () => {
         .from('lojas')
         .select('*')
         .eq('id_usuario', user?.id)
-        .maybeSingle();
+        .single();
 
       if (storeError) throw storeError;
-      
-      if (!storeData) {
-        navigate('/setup');
-        return;
-      }
       
       // Check if store has a proper name (not default)
       if (!storeData.nome || storeData.nome === 'Minha Loja' || storeData.nome === user?.email) {
@@ -137,7 +131,6 @@ const Dashboard = () => {
 
   const handleTransactionSuccess = () => {
     setShowTransactionForm(false);
-    setRefreshKey(prev => prev + 1);
     loadData();
   };
 
@@ -481,10 +474,10 @@ const Dashboard = () => {
 
         {/* Charts */}
         <div className="mb-8 space-y-6">
-          {store && <StatsChart key={`stats-${refreshKey}`} storeId={store.id} selectedMonth={selectedMonth} />}
+          {store && <StatsChart storeId={store.id} selectedMonth={selectedMonth} />}
           <div className="grid gap-6 md:grid-cols-2">
-            {store && <DailyPerformanceChart key={`daily-${refreshKey}`} storeId={store.id} />}
-            {store && <WeeklyStatsChart key={`weekly-${refreshKey}`} storeId={store.id} />}
+            {store && <DailyPerformanceChart storeId={store.id} />}
+            {store && <WeeklyStatsChart storeId={store.id} />}
           </div>
         </div>
 
