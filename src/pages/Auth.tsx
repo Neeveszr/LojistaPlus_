@@ -88,12 +88,13 @@ const Auth = () => {
     if (oauthInFlight.current) return;
     oauthInFlight.current = true;
     setLoading(true);
-    
+
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/`,
+          skipBrowserRedirect: true,
         },
       });
 
@@ -102,9 +103,20 @@ const Auth = () => {
         toast.error(error.message || 'Erro ao fazer login com Google');
         setLoading(false);
         oauthInFlight.current = false;
+        return;
       }
-      // Se não houver erro, o Supabase redireciona automaticamente para o Google
-      // e depois volta para /dashboard com o token na URL
+
+      const url = data?.url;
+      if (!url) {
+        throw new Error('Não foi possível obter a URL de login do Google.');
+      }
+
+      // Redireciona na MESMA janela, porém no topo (fora do iframe), evitando o auth-bridge
+      try {
+        (window.top as Window).location.href = url;
+      } catch {
+        window.location.href = url;
+      }
     } catch (error: any) {
       console.error('Erro capturado:', error);
       toast.error(error.message || 'Erro ao fazer login com Google');
