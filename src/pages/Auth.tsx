@@ -108,18 +108,16 @@ const Auth = () => {
         throw new Error('Não foi possível obter a URL de login do Google.');
       }
 
-      console.log('✅ Redirecionando fora do iframe (top window)...');
-      try {
-        const a = document.createElement('a');
-        a.href = url;
-        a.target = '_top';
-        a.rel = 'noopener noreferrer';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      } catch {
-        // Fallback seguro: redireciona esta janela
-        window.location.href = url;
+      console.log('✅ Abrindo Google OAuth em nova aba...');
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        // Popup bloqueado: tentar no topo
+        try {
+          (window.top as Window).location.href = url;
+        } catch {
+          // Fallback seguro: redireciona esta janela
+          window.location.href = url;
+        }
       }
     } catch (error: any) {
       console.error('❌ Erro capturado:', error);
