@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,6 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const oauthInFlight = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +33,7 @@ const Auth = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${window.location.origin}/dashboard`,
         },
       });
 
@@ -85,25 +84,20 @@ const Auth = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    if (oauthInFlight.current) return;
-    oauthInFlight.current = true;
     setLoading(true);
-
+    console.log('🔵 Iniciando login com Google...');
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: `${window.location.origin}/dashboard`,
           skipBrowserRedirect: true,
         },
       });
 
       if (error) {
-        console.error('Erro ao iniciar login com Google:', error);
-        toast.error(error.message || 'Erro ao fazer login com Google');
-        setLoading(false);
-        oauthInFlight.current = false;
-        return;
+        console.error('❌ Erro no Google OAuth:', error);
+        throw error;
       }
 
       const url = data?.url;
@@ -111,17 +105,29 @@ const Auth = () => {
         throw new Error('Não foi possível obter a URL de login do Google.');
       }
 
-      // Redireciona na MESMA janela, porém no topo (fora do iframe), evitando o auth-bridge
-      try {
-        (window.top as Window).location.href = url;
-      } catch {
-        window.location.href = url;
+      console.log('✅ Obtida URL do Google, tentando abrir fora do iframe...');
+
+      const openInTop = () => {
+        try {
+          if (window.top) {
+            (window.top as Window).location.href = url;
+            return true;
+          }
+        } catch {}
+        return false;
+      };
+
+      const openedTop = openInTop();
+      if (!openedTop) {
+        const win = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!win) {
+          window.location.href = url;
+        }
       }
     } catch (error: any) {
-      console.error('Erro capturado:', error);
+      console.error('❌ Erro capturado:', error);
       toast.error(error.message || 'Erro ao fazer login com Google');
       setLoading(false);
-      oauthInFlight.current = false;
     }
   };
 
@@ -221,7 +227,6 @@ const Auth = () => {
           </div>
 
           <Button
-            type="button"
             variant="outline"
             className="w-full"
             onClick={handleGoogleSignIn}

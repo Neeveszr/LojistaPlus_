@@ -127,7 +127,7 @@ const TransactionList = ({ storeId, type, onUpdate, selectedMonth }: Transaction
               {data && (
                 <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
                   <Calendar className="h-3 w-3" />
-                  {format(new Date(data + 'T00:00:00'), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                  {format(new Date(data), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                 </div>
               )}
             </div>

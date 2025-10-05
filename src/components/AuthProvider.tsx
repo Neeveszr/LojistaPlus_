@@ -30,52 +30,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
-
-    // Handle OAuth return flows (PKCE and implicit hash)
-    const url = window.location.href;
-    const hash = window.location.hash;
-    const hasCode = /[?&]code=/.test(url);
-    const hasAccessToken = hash.includes('access_token');
-
-    const cleanUrl = () => {
-      const next = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, document.title, next);
-    };
-
-    (async () => {
-      try {
-        if (hasAccessToken) {
-          // Handle implicit/hash tokens produced by bridges/iframes
-          const params = new URLSearchParams(hash.replace(/^#/, ''));
-          const access_token = params.get('access_token') ?? undefined;
-          const refresh_token = params.get('refresh_token') ?? undefined;
-          if (access_token && refresh_token) {
-            const { error } = await supabase.auth.setSession({ access_token, refresh_token });
-            if (error) {
-              console.error('setSession error:', error);
-            }
-            cleanUrl();
-          }
-        } else if (hasCode) {
-          // Standard PKCE code exchange
-          await supabase.auth.exchangeCodeForSession(url);
-          cleanUrl();
-        } else {
-          // Check for existing session otherwise
-          const { data: { session } } = await supabase.auth.getSession();
-          setSession(session);
-          setUser(session?.user ?? null);
-        }
-      } finally {
-        setLoading(false);
-      }
-    })();
 
     return () => subscription.unsubscribe();
   }, []);
