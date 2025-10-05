@@ -54,9 +54,6 @@ https://lojistaplus.lovable.app
     - Geração de relatórios filtrados, sendo diário, semanal ou mensal.
     - Exportação em CSV.
 
-
-
-
 ## Diagrama
 
 ## 📷 Prints
