@@ -55,6 +55,7 @@ https://lojistaplus.lovable.app
     - Exportação em CSV.
 
 ## 📋 Diagrama
+<img width="993" height="667" alt="Diagrama Lojista+ drawio" src="https://github.com/user-attachments/assets/5dc4ccfd-9370-4b2a-88f3-396b758db761" />
 
 ## 🖼️ Prints
 
