@@ -5,7 +5,10 @@ Lojista+ é uma plataforma web voltada para micro e pequenos empreendedores que 
 
 O sistema oferece um painel financeiro em tempo real, permitindo visualizar indicadores, gráficos e relatórios sobre o desempenho da loja.
 
+## 💻 Link
+[Lojista+](https://lojistaplus.lovable.app)
 
+https://lojistaplus.lovable.app
 
 ## 🎯 Objetivos principais
 •	Permitir o cadastro de vendas e despesas diárias.
