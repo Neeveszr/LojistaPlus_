@@ -57,3 +57,17 @@ https://lojistaplus.lovable.app
 ## 📋 Diagrama
 
 ## 🖼️ Prints
+
+<img width="1855" height="946" alt="Land - 1" src="https://github.com/user-attachments/assets/8cac691d-bf29-4795-9747-dee331e0832c" />
+
+<img width="1858" height="827" alt="Land - 2" src="https://github.com/user-attachments/assets/f261ee99-a0b4-460d-adec-0aacadd99966" />
+
+<img width="1870" height="947" alt="Login" src="https://github.com/user-attachments/assets/1edf8c2c-0ccb-428d-a4cc-68b1cf9bc1a3" />
+
+<img width="1865" height="939" alt="Registro" src="https://github.com/user-attachments/assets/6831ba33-84db-4496-9de0-2247918a841e" />
+
+<img width="1858" height="931" alt="Nome da Loja" src="https://github.com/user-attachments/assets/256a46b0-fa6c-4a6c-bc57-ea1350a9c8f8" />
+
+<img width="1855" height="952" alt="Principal 1" src="https://github.com/user-attachments/assets/6b328e64-0e0c-4aa9-bcdc-0ffe4dbb69bb" />
+
+<img width="1818" height="802" alt="Principal 2" src="https://github.com/user-attachments/assets/359293e8-703c-41f5-9e07-175bed60276d" />
