@@ -34,7 +34,7 @@ const Auth = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${window.location.origin}/`,
         },
       });
 
@@ -110,7 +110,13 @@ const Auth = () => {
 
       console.log('✅ Redirecionando fora do iframe (top window)...');
       try {
-        (window.top as Window).location.href = url;
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_top';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
       } catch {
         // Fallback seguro: redireciona esta janela
         window.location.href = url;
