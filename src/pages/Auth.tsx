@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const oauthInFlight = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -84,13 +85,15 @@ const Auth = () => {
   };
 
   const handleGoogleSignIn = async () => {
+    if (oauthInFlight.current) return;
+    oauthInFlight.current = true;
     setLoading(true);
     console.log('🔵 Iniciando login com Google...');
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}/`,
           skipBrowserRedirect: true,
         },
       });
@@ -105,29 +108,18 @@ const Auth = () => {
         throw new Error('Não foi possível obter a URL de login do Google.');
       }
 
-      console.log('✅ Obtida URL do Google, tentando abrir fora do iframe...');
-
-      const openInTop = () => {
-        try {
-          if (window.top) {
-            (window.top as Window).location.href = url;
-            return true;
-          }
-        } catch {}
-        return false;
-      };
-
-      const openedTop = openInTop();
-      if (!openedTop) {
-        const win = window.open(url, '_blank', 'noopener,noreferrer');
-        if (!win) {
-          window.location.href = url;
-        }
+      console.log('✅ Redirecionando fora do iframe (top window)...');
+      try {
+        (window.top as Window).location.href = url;
+      } catch {
+        // Fallback seguro: redireciona esta janela
+        window.location.href = url;
       }
     } catch (error: any) {
       console.error('❌ Erro capturado:', error);
       toast.error(error.message || 'Erro ao fazer login com Google');
       setLoading(false);
+      oauthInFlight.current = false;
     }
   };
 
@@ -227,6 +219,7 @@ const Auth = () => {
           </div>
 
           <Button
+            type="button"
             variant="outline"
             className="w-full"
             onClick={handleGoogleSignIn}
