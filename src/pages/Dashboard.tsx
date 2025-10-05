@@ -405,9 +405,11 @@ const Dashboard = () => {
 
         {/* Charts */}
         <div className="mb-8 space-y-6">
-          {store && <DailyPerformanceChart storeId={store.id} />}
+          <div className="grid gap-6 md:grid-cols-2">
+            {store && <DailyPerformanceChart storeId={store.id} />}
+            {store && <WeeklyStatsChart storeId={store.id} />}
+          </div>
           {store && <StatsChart storeId={store.id} selectedMonth={selectedMonth} />}
-          {store && <WeeklyStatsChart storeId={store.id} />}
         </div>
 
         {/* Transactions */}
