@@ -58,3 +58,5 @@ https://lojistaplus.lovable.app
 
 
 ## Diagrama
+
+## 📷 Prints
