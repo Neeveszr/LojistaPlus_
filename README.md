@@ -1,73 +1,57 @@
-# Welcome to your Lovable project
 
-## Project info
+# Lojista+
 
-**URL**: https://lovable.dev/projects/257bf1b3-de88-4097-8dee-eb50cb67e3fd
+Lojista+ é uma plataforma web voltada para micro e pequenos empreendedores que desejam gerenciar vendas, despesas e saldo de forma simples, intuitiva e totalmente integrada com o Supabase e o Lovable.
 
-## How can I edit this code?
+O sistema oferece um painel financeiro em tempo real, permitindo visualizar indicadores, gráficos e relatórios sobre o desempenho da loja.
 
-There are several ways of editing your application.
 
-**Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/257bf1b3-de88-4097-8dee-eb50cb67e3fd) and start prompting.
+## 🎯 Objetivos principais
+•	Permitir o cadastro de vendas e despesas diárias.
 
-Changes made via Lovable will be committed automatically to this repo.
+•	Exibir resumos financeiros (saldo em caixa, total de vendas, total de despesas.)
 
-**Use your preferred IDE**
+•	Gerar relatórios automáticos (diário, semanal e mensal).
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+•	Exibir gráficos interativos (ex.: lucro ao longo do tempo, comparativo entre períodos).
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+•	Garantir segurança e privacidade, isolando os dados de cada usuário/loja.
 
-Follow these steps:
+## 🚀 Tecnologias Utilizadas
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+| Camada                       | Tecnologia                       | Função                                                  |
+| ---------------------------- | -------------------------------- | ------------------------------------------------------- |
+| **Backend (Banco de Dados)** | [Supabase](https://supabase.com) | Armazenamento de dados, autenticação e APIs automáticas |
+| **Frontend (Low-code)**      | [Lovable](https://lovable.dev)    | Interface visual e lógica de negócios no front-end      |
+| **Autenticação**             | Supabase Auth                    | Login e registro seguro de usuários                     |
+| **Visualização**             | Chart.js / Recharts              | Gráficos e indicadores financeiros                      |
+| **Controle de Acesso**       | RLS (Row Level Security)         | Garante que cada usuário veja apenas sua própria loja   |
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 📊 Funcionalidades
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+*  **Cadastro e Login de Usuários/Lojas**
+    - Cada usuário possui sua própria loja vinculada, podendo escolher o nome dela.
+    - Login seguro com autenticação e sessão persistente.
+    - Suporte a login via Google (OAuth).
 
-**Edit a file directly in GitHub**
+*  **Dashboard Financeira**
+    - Visão geral do saldo atual da loja.
+    - Cards com total de vendas, despesas e lucro.
+    - Gráficos de desempenho (diário, semanal e mensal).
+    - Exibição separada por meses.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+* **Gestão de Entradas e Saídas**
+    - Cadastro de vendas (valor, data, descrição).
+    - Cadastro de despesas (valor, data, descrição, categoria).
+    - Edição e exclusão de lançamentos.
 
-**Use GitHub Codespaces**
+* **Geração de relatórios**
+    - Geração de relatórios filtrados, sendo diário, semanal ou mensal.
+    - Exportação em CSV.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-## What technologies are used for this project?
 
-This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/257bf1b3-de88-4097-8dee-eb50cb67e3fd) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Diagrama
