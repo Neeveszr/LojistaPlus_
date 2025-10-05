@@ -14,6 +14,7 @@ import TransactionForm from '@/components/TransactionForm';
 import TransactionList from '@/components/TransactionList';
 import StatsChart from '@/components/StatsChart';
 import WeeklyStatsChart from '@/components/WeeklyStatsChart';
+import DailyPerformanceChart from '@/components/DailyPerformanceChart';
 
 interface StoreData {
   id: string;
@@ -404,6 +405,7 @@ const Dashboard = () => {
 
         {/* Charts */}
         <div className="mb-8 space-y-6">
+          {store && <DailyPerformanceChart storeId={store.id} />}
           {store && <StatsChart storeId={store.id} selectedMonth={selectedMonth} />}
           {store && <WeeklyStatsChart storeId={store.id} />}
         </div>
