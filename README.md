@@ -28,7 +28,6 @@ https://lojistaplus.lovable.app
 | **Backend (Banco de Dados)** | [Supabase](https://supabase.com) | Armazenamento de dados, autenticação e APIs automáticas |
 | **Frontend (Low-code)**      | [Lovable](https://lovable.dev)    | Interface visual e lógica de negócios no front-end      |
 | **Autenticação**             | Supabase Auth                    | Login e registro seguro de usuários                     |
-| **Visualização**             | Chart.js / Recharts              | Gráficos e indicadores financeiros                      |
 | **Controle de Acesso**       | RLS (Row Level Security)         | Garante que cada usuário veja apenas sua própria loja   |
 
 
